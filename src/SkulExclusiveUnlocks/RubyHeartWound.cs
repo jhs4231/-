@@ -7,7 +7,7 @@ namespace SkulExclusiveUnlocks
 {
     /// <summary>
     /// Ruby Heart: all eligible attacks apply Wound during the three seconds after swap.
-    /// Bleed-kill-based healing is not part of this class until verified bleed attribution is available.
+    /// Bleed kills heal one HP after each three kills, using the game bleed damage key.
     /// </summary>
     [Serializable]
     public sealed class RubyHeartWound : Ability, ICloneable
@@ -19,6 +19,7 @@ namespace SkulExclusiveUnlocks
         public sealed class Instance : AbilityInstance<RubyHeartWound>
         {
             private float remaining;
+            private int bleedKills;
             public Instance(Character owner, RubyHeartWound ability) : base(owner, ability) {}
 
             public override void OnAttach()
@@ -26,12 +27,14 @@ namespace SkulExclusiveUnlocks
                 remaining = 0;
                 owner.playerComponents.inventory.weapon.onSwap += OnSwap;
                 owner.onGiveDamage.Add(0, OnHit);
+                owner.onKilled += OnKilledEnemy;
             }
 
             public override void OnDetach()
             {
                 owner.playerComponents.inventory.weapon.onSwap -= OnSwap;
                 owner.onGiveDamage.Remove(OnHit);
+                owner.onKilled -= OnKilledEnemy;
             }
 
             public override void UpdateTime(float deltaTime)
@@ -41,6 +44,17 @@ namespace SkulExclusiveUnlocks
             }
 
             private void OnSwap() { remaining = ability.windowSeconds; }
+
+            private void OnKilledEnemy(ITarget target, ref Damage damage)
+            {
+                if (target == null || target.character == null ||
+                    target.character.type == Character.Type.Dummy) return;
+                if (damage.key != CharacterStatus.AttackKeyBleed) return;
+                bleedKills++;
+                if (bleedKills < 3) return;
+                bleedKills = 0;
+                owner.health.Heal(1.0);
+            }
 
             private bool OnHit(ITarget target, ref Damage damage)
             {
