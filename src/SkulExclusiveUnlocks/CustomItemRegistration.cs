@@ -79,6 +79,8 @@ namespace SkulExclusiveUnlocks
                 item.abilities = new Ability[] { new UniversalFlaskProc { chancePercent = 15 } };
             if (key == "RubyHeart")
                 item.abilities = new Ability[] { new RubyHeartWound { windowSeconds = 3f } };
+            if (key == "DestroyerBlade")
+                item.abilities = new Ability[] { new DestroyerBladeCharge { secondsToMaximum = 3.0f } };
             if (key == "SilverFur")
                 item.abilities = new Ability[] { new SilverFurShield { cooldown = 20f } };
             if (key == "WildMark")
@@ -263,6 +265,14 @@ namespace SkulExclusiveUnlocks
                         node.transform.SetParent(abilityContainer.transform, false);
                         var component = node.GetComponent<RubyHeartWoundComponent>();
                         component.Configure(ruby);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is DestroyerBladeCharge blade)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(DestroyerBladeChargeComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<DestroyerBladeChargeComponent>();
+                        component.Configure(blade);
                         attacher._components[i] = component;
                     }
                     else
