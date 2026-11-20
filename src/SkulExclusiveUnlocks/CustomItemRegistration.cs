@@ -79,6 +79,8 @@ namespace SkulExclusiveUnlocks
                 item.abilities = new Ability[] { new UniversalFlaskProc { chancePercent = 15 } };
             if (key == "RubyHeart")
                 item.abilities = new Ability[] { new RubyHeartWound { windowSeconds = 3f } };
+            if (key == "Chains")
+                item.abilities = new Ability[] { new ChainsOnSkill { secondsPerChain = 5f, maximumChains = 8, baseDamagePerChain = 1.0, range = 12f } };
             if (key == "ThirdEye")
                 item.abilities = new Ability[] { new ThirdEyePulse { interval = 5f, maxRange = 12f, baseDamage = 1.0 } };
             if (key == "MenacingMask")
@@ -303,6 +305,14 @@ namespace SkulExclusiveUnlocks
                         node.transform.SetParent(abilityContainer.transform, false);
                         var component = node.GetComponent<ThirdEyePulseComponent>();
                         component.Configure(eye);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is ChainsOnSkill chains)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(ChainsOnSkillComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<ChainsOnSkillComponent>();
+                        component.Configure(chains);
                         attacher._components[i] = component;
                     }
                     else
