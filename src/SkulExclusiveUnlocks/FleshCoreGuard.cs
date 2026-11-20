@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Characters;
 using Characters.Abilities;
 
@@ -7,11 +8,12 @@ namespace SkulExclusiveUnlocks
     /// <summary>
     /// Flesh Core: halves non-null incoming damage while equipped.
     /// Health +100 is supplied by the item's regular Stat.Values.
-    /// The once-per-run revival requires a separate verified death interception hook.
+    /// Once-per-run resurrection is guarded by a static owner identity set.
     /// </summary>
     [Serializable]
     public sealed class FleshCoreGuard : Ability, ICloneable
     {
+        private static readonly HashSet<int> RevivedOwners = new HashSet<int>();
         public override IAbilityInstance CreateInstance(Character owner)
         {
             return new Instance(owner, this);
@@ -29,11 +31,20 @@ namespace SkulExclusiveUnlocks
             public override void OnAttach()
             {
                 owner.health.onTakeDamage.Add(-1000, new TakeDamageDelegate(ReduceDamage));
+                owner.health.onDie += TryRevive;
             }
 
             public override void OnDetach()
             {
                 owner.health.onTakeDamage.Remove(new TakeDamageDelegate(ReduceDamage));
+                owner.health.onDie -= TryRevive;
+            }
+
+            private void TryRevive()
+            {
+                int id = owner.GetInstanceID();
+                if (!RevivedOwners.Add(id)) return;
+                owner.health.ResetToMaximumHealth();
             }
 
             private bool ReduceDamage(ref Damage damage)
