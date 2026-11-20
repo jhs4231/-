@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SkulExclusiveUnlocks
 {
-    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.4.0")]
+    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.5.0")]
     public sealed class Plugin : BaseUnityPlugin
     {
         internal static Plugin Instance { get; private set; }
@@ -24,7 +24,7 @@ namespace SkulExclusiveUnlocks
             try
             {
                 Harmony.CreateAndPatchAll(typeof(CustomItemRegistration));
-                Logger.LogWarning("Experimental item registration loaded. Six combat ability sources added; boss unlock hook and several effects remain unimplemented. Not runtime-tested.");
+                Logger.LogWarning("Experimental item registration loaded. Seven item ability sources added, Flesh Core revive and Ruby Heart bleed healing included; boss unlock hook and effects remain unimplemented. Not runtime-tested.");
             }
             catch (Exception ex)
             {
