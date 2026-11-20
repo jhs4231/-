@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Characters;
 using Characters.Abilities;
+using System.Reflection;
+using Characters;
 using Characters.Abilities.CharacterStat;
 using Characters.Gear.Items;
 using Characters.Gear.Synergy.Inscriptions;
@@ -74,6 +75,8 @@ namespace SkulExclusiveUnlocks
                 prefabKeyword2 = second,
                 stats = new Stat.Values(values),
             };
+            if (key == "GiantCleaver")
+                item.abilities = new Ability[] { new HealTriggeredPhysicalBuff { duration = 10f, physicalAttackBonus = 0.75 } };
             if (key == "UniversalFlask")
             {
                 // 15% total, not 15% per status. Each hit chooses one random status.
@@ -160,6 +163,7 @@ namespace SkulExclusiveUnlocks
         internal string unlockGroup;
         internal bool combatLogicRequiresIntegration;
         internal Stat.Values stats;
+        internal Ability[] abilities;
         private Item cached;
         private static GameObject cacheRoot;
 
@@ -196,6 +200,24 @@ namespace SkulExclusiveUnlocks
             cached.keyword2 = prefabKeyword2;
             cached._stat = stats;
             cached._rarity = rarity;
+            if (abilities != null && abilities.Length > 0)
+            {
+                // Mirrors the verified item ability attachment flow in VoiceOfTheCommunity.
+                // Avoid shared mutable state: cloned item prefab keeps the ability component on its own template.
+                var abilityContainer = new GameObject("ExclusiveAbilities");
+                abilityContainer.transform.SetParent(cached.transform, false);
+                var attacher = cached._abilityAttacher = new AbilityAttacher();
+                attacher._container = abilityContainer;
+                attacher._components = new AbilityAttacher[abilities.Length];
+                for (int i = 0; i < abilities.Length; i++)
+                {
+                    var node = new GameObject("[" + i + "]", typeof(HealTriggeredPhysicalBuffComponent));
+                    node.transform.SetParent(abilityContainer.transform, false);
+                    var component = node.GetComponent<HealTriggeredPhysicalBuffComponent>();
+                    component._ability = (HealTriggeredPhysicalBuff)abilities[i];
+                    attacher._components[i] = component;
+                }
+            }
             // Placeholder visual assets until permission-cleared 32px sprites are available.
             UnityEngine.Object.DontDestroyOnLoad(cached);
             return cached;
