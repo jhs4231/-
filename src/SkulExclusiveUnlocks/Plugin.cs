@@ -7,21 +7,24 @@ using UnityEngine;
 
 namespace SkulExclusiveUnlocks
 {
-    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.2.0")]
+    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.3.0")]
     public sealed class Plugin : BaseUnityPlugin
     {
         internal static Plugin Instance { get; private set; }
         private UnlockStore store;
+        private bool unlockAllForTesting;
 
         private void Awake()
         {
             Instance = this;
             store = new UnlockStore(Path.Combine(Paths.ConfigPath, "jhs4231.skul.exclusiveunlocks.json"));
             store.Load();
+            unlockAllForTesting = Config.Bind("Testing", "UnlockAllItemsForTesting", false,
+                "Developer-only: register all exclusive items regardless of Alexander unlock progress.").Value;
             try
             {
                 Harmony.CreateAndPatchAll(typeof(CustomItemRegistration));
-                Logger.LogWarning("Experimental item registration loaded. Combat events and boss unlock hook remain unimplemented.");
+                Logger.LogWarning("Experimental item registration loaded. Giant Cleaver heal buff added; most combat effects and boss hook are still pending.");
             }
             catch (Exception ex)
             {
@@ -41,7 +44,7 @@ namespace SkulExclusiveUnlocks
         }
 
         internal bool IsGroupUnlocked(string groupId) { return store != null && store.IsUnlocked(groupId); }
-        internal static bool HasUnlock(string groupId) { return Instance != null && Instance.IsGroupUnlocked(groupId); }
+        internal static bool HasUnlock(string groupId) { return Instance != null && (Instance.unlockAllForTesting || Instance.IsGroupUnlocked(groupId)); }
         internal static void WriteLog(string message) { if (Instance != null) Instance.Logger.LogInfo(message); }
     }
 
