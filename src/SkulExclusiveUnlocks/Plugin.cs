@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using BepInEx;
+using HarmonyLib;
 using UnityEngine;
 
 namespace SkulExclusiveUnlocks
 {
-    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.1.0")]
+    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.2.0")]
     public sealed class Plugin : BaseUnityPlugin
     {
         internal static Plugin Instance { get; private set; }
@@ -17,7 +18,15 @@ namespace SkulExclusiveUnlocks
             Instance = this;
             store = new UnlockStore(Path.Combine(Paths.ConfigPath, "jhs4231.skul.exclusiveunlocks.json"));
             store.Load();
-            Logger.LogWarning("Prototype only: boss-kill hook, custom items and combat effects are NOT installed.");
+            try
+            {
+                Harmony.CreateAndPatchAll(typeof(CustomItemRegistration));
+                Logger.LogWarning("Experimental item registration loaded. Combat events and boss unlock hook remain unimplemented.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Item registration failed. Check game version and dependencies: " + ex);
+            }
         }
 
         // Integration point ONLY. Call from a verified Harmony hook after Alexander is defeated
@@ -31,7 +40,9 @@ namespace SkulExclusiveUnlocks
                 Logger.LogInfo("Exclusive item group unlocked: " + groupId);
         }
 
-        internal bool IsGroupUnlocked(string groupId) { return store.IsUnlocked(groupId); }
+        internal bool IsGroupUnlocked(string groupId) { return store != null && store.IsUnlocked(groupId); }
+        internal static bool HasUnlock(string groupId) { return Instance != null && Instance.IsGroupUnlocked(groupId); }
+        internal static void WriteLog(string message) { if (Instance != null) Instance.Logger.LogInfo(message); }
     }
 
     internal static class UnlockDefinitions
