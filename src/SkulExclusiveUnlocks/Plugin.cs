@@ -2,28 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using BepInEx;
+using BepInEx.Configuration;
+using Services;
+using Singletons;
 using HarmonyLib;
 using UnityEngine;
 
 namespace SkulExclusiveUnlocks
 {
-    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.5.0")]
+    [BepInPlugin("jhs4231.skul.exclusiveunlocks", "Skul Exclusive Unlock Items (Prototype)", "0.6.0")]
     public sealed class Plugin : BaseUnityPlugin
     {
         internal static Plugin Instance { get; private set; }
         private UnlockStore store;
         private bool unlockAllForTesting;
+        private ConfigEntry<int> verifiedBossKey;
+        private ConfigEntry<string> verifiedSkullNames;
 
         private void Awake()
         {
             Instance = this;
             store = new UnlockStore(Path.Combine(Paths.ConfigPath, "jhs4231.skul.exclusiveunlocks.json"));
             store.Load();
+            verifiedBossKey = Config.Bind("UnlockVerification", "AlexanderBossKey", 0,
+                "Game Character.Key integer confirmed as Alexander. 0 disables automatic unlock.");
+            verifiedSkullNames = Config.Bind("UnlockVerification", "ExactSkullNames", "",
+                "Semicolon-separated group=exact-internal-weapon-name pairs (example leader=YOUR_VERIFIED_NAME). Empty disables automatic unlock.");
             unlockAllForTesting = Config.Bind("Testing", "UnlockAllItemsForTesting", false,
                 "Developer-only: register all exclusive items regardless of Alexander unlock progress.").Value;
             try
             {
                 Harmony.CreateAndPatchAll(typeof(CustomItemRegistration));
+                Harmony.CreateAndPatchAll(typeof(BossDefeatDiagnosticPatch));
                 Logger.LogWarning("Experimental item registration loaded. Seven item ability sources added, Flesh Core revive and Ruby Heart bleed healing included; boss unlock hook and effects remain unimplemented. Not runtime-tested.");
             }
             catch (Exception ex)
@@ -41,6 +51,42 @@ namespace SkulExclusiveUnlocks
             if (!UnlockDefinitions.TryGetGroup(normalizedSkullId, out groupId)) return;
             if (store.Unlock(groupId))
                 Logger.LogInfo("Exclusive item group unlocked: " + groupId);
+        }
+
+        internal string CurrentWeaponName()
+        {
+            try
+            {
+                var character = Singleton<Service>.Instance.levelManager.player;
+                if (character == null || character.playerComponents == null ||
+                    character.playerComponents.inventory == null ||
+                    character.playerComponents.inventory.weapon == null ||
+                    character.playerComponents.inventory.weapon.current == null) return "<unavailable>";
+                return character.playerComponents.inventory.weapon.current.name;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning("Could not inspect equipped skull: " + ex.Message);
+                return "<error>";
+            }
+        }
+
+        internal void TryUnlockFromVerifiedBossAndWeapon(int bossKey, string weaponName)
+        {
+            if (verifiedBossKey == null || verifiedBossKey.Value == 0 || bossKey != verifiedBossKey.Value) return;
+            if (string.IsNullOrWhiteSpace(weaponName) || verifiedSkullNames == null) return;
+            string[] mappings = verifiedSkullNames.Value.Split(';');
+            foreach (var mapping in mappings)
+            {
+                int index = mapping.IndexOf('=');
+                if (index <= 0) continue;
+                string group = mapping.Substring(0, index).Trim();
+                string exact = mapping.Substring(index + 1).Trim();
+                if (!string.Equals(exact, weaponName, StringComparison.Ordinal)) continue;
+                if (!UnlockDefinitions.IsKnownGroup(group)) continue;
+                if (store.Unlock(group)) Logger.LogInfo("Verified Skul exclusive unlock: " + group);
+                return;
+            }
         }
 
         internal bool IsGroupUnlocked(string groupId) { return store != null && store.IsUnlocked(groupId); }
@@ -61,6 +107,12 @@ namespace SkulExclusiveUnlocks
                 { "archlich", "released" },
                 { "royal-guard-captain", "swordsman" }
             };
+
+        internal static bool IsKnownGroup(string id)
+        {
+            return id == "leader" || id == "hunger" || id == "science" ||
+                   id == "violence" || id == "released" || id == "swordsman";
+        }
 
         internal static bool TryGetGroup(string id, out string groupId)
         {
