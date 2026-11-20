@@ -214,7 +214,7 @@ namespace SkulExclusiveUnlocks
                     var node = new GameObject("[" + i + "]", typeof(HealTriggeredPhysicalBuffComponent));
                     node.transform.SetParent(abilityContainer.transform, false);
                     var component = node.GetComponent<HealTriggeredPhysicalBuffComponent>();
-                    component._ability = (HealTriggeredPhysicalBuff)abilities[i];
+                    component.Configure((HealTriggeredPhysicalBuff)abilities[i]);
                     attacher._components[i] = component;
                 }
             }
