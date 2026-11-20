@@ -1,4 +1,4 @@
-# 게임 기능 구현 현황 — v0.4.0 source snapshot
+# 게임 기능 구현 현황 — v0.5.0 source snapshot
 
 **중요:** GitHub 소스 업데이트만 완료. 이 환경에는 Skul 게임 `Assembly-CSharp.dll`, dotnet SDK 및 게임 실행 환경이 없으므로 **컴파일·런타임 검증을 전혀 하지 못했습니다.** 이 저장소의 DLL이 정상 동작한다고 보장하지 않습니다.
 
@@ -17,11 +17,11 @@
 | 은빛 모피 | 20초 쿨다운으로 유효한 한 번의 피해 무효화 | `SilverFurShield.cs` |
 | 야생의 표식 | 추가 이동속도 %에 따른 물리/마법 공격력 동적 보너스 | `WildMarkSpeedPower.cs` |
 | 거인의 식칼 | 회복 시 10초 동안 물리공격력 +75% | `HealTriggeredPhysicalBuff.cs` |
-| 살점 핵 | 유효 피해 50% 감소 (부활은 별도) | `FleshCoreGuard.cs` |
+| 살점 핵 | 유효 피해 50% 감소 및 동일 플레이어에 대해 1회 사망 부활 | `FleshCoreGuard.cs` |
 | 만능 플라스크 | 유효 공격 15%로 5가지 상태이상 중 1개 부여 | `UniversalFlaskProc.cs` |
-| 루비 심장 | 교대 후 3초 동안 유효 공격으로 상처 부여 | `RubyHeartWound.cs` |
+| 루비 심장 | 교대 후 3초 상처 부여 및 출혈 피해로 3명 처치 시 HP 1 회복 | `RubyHeartWound.cs` |\n| 파괴자의 검 | 스킬 사용 중 물리 공격력/치명타 증가, 스킬 완료/취소 시 해제 (상승 속도 **임시 3초**) | `DestroyerBladeCharge.cs` |
 
-**6종 모두 구현 코드가 저장소에 있는 상태이지 빌드/게임 정상작동이 입증된 상태가 아닙니다.**
+**7종 모두 구현 코드가 저장소에 있는 상태이지 빌드/게임 정상작동이 입증된 상태가 아닙니다.**
 
 ## 여전히 구현되지 않은 특수 효과
 
