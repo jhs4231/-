@@ -79,6 +79,8 @@ namespace SkulExclusiveUnlocks
                 item.abilities = new Ability[] { new UniversalFlaskProc { chancePercent = 15 } };
             if (key == "RubyHeart")
                 item.abilities = new Ability[] { new RubyHeartWound { windowSeconds = 3f } };
+            if (key == "RoyalInsignia")
+                item.abilities = new Ability[] { new RoyalInsigniaBleedHits { extraHitCount = 8, baseDamage = 1.0 } };
             if (key == "DestroyerBlade")
                 item.abilities = new Ability[] { new DestroyerBladeCharge { secondsToMaximum = 3.0f } };
             if (key == "SilverFur")
@@ -273,6 +275,14 @@ namespace SkulExclusiveUnlocks
                         node.transform.SetParent(abilityContainer.transform, false);
                         var component = node.GetComponent<DestroyerBladeChargeComponent>();
                         component.Configure(blade);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is RoyalInsigniaBleedHits royal)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(RoyalInsigniaBleedHitsComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<RoyalInsigniaBleedHitsComponent>();
+                        component.Configure(royal);
                         attacher._components[i] = component;
                     }
                     else
