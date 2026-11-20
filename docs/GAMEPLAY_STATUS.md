@@ -1,52 +1,65 @@
-# 게임 기능 구현 현황 — v0.5.0 source snapshot
+# Skul Exclusive Unlock Items — v0.6.0 experimental source
 
-**중요:** GitHub 소스 업데이트만 완료. 이 환경에는 Skul 게임 `Assembly-CSharp.dll`, dotnet SDK 및 게임 실행 환경이 없으므로 **컴파일·런타임 검증을 전혀 하지 못했습니다.** 이 저장소의 DLL이 정상 동작한다고 보장하지 않습니다.
+> **검증 상태: 소스 코드만 작성·GitHub 반영. 컴파일 및 실제 게임 테스트는 하지 않았음.**
+> 현재 작업 환경에 Skul의 `Assembly-CSharp.dll`, SDK 및 실행 게임이 없어 API 차이, 빌드 오류, 로딩·전투 안정성은 미확인.
 
-## 시도한 게임 연동
+## 12종 아이템 중 코드 연결 현황
 
-- Harmony `GearResource.Initialize` 커스텀 아이템 목록 주입
-- `ItemReference.LoadAsync` / `GearReference.LoadAsync` / `LevelManager.DropItem` 게임 아이템 드롭 흐름 연동
-- 커스텀 아이템의 기본 스탯·각인·한국어 표시 및 `AbilityAttacher` 부착
-- `UnlockAllItemsForTesting` 옵션 (기본 false)
-- `build.ps1`: Windows 게임 DLL 확인 후 빌드 명령 실행
+| 아이템 | 현재 소스가 시도하는 효과 | 제한 |
+|---|---|---|
+| 은빛 모피 | 이동속도 +40%, 20초마다 유효 피격 1회 무효 | 게임 미검증 |
+| 야생의 표식 | 이동속도 +90%, 보너스 이동속도 비례 양 공격력 | 보너스 스탯 계산식 게임 미검증 |
+| 거인의 식칼 | 회복 시 10초간 물리공격력 +75% | Health.onHealed 이용, 미검증 |
+| 살점 핵 | 최대 체력 +100, 받는 피해 50% 감소, 플레이어당 한 번 부활 | onDie 사용, 다른 부활 효과와의 상호작용 미검증 |
+| 만능 플라스크 | 유효 공격마다 15% 확률로 무작위 상태이상 1개 | 보스·상태 면역/중첩 미검증 |
+| 완벽한 마석 | 아이템 기본 등록 데이터만 있음 | **원본 이미지에 효과 설명이 없음** |
+| 험악한 가면 | 교대 쿨다운 +20%, 교대 시 6초간 적 이동속도 감소 | 느려지는 수치는 임시 30%, 범위 미확정 |
+| 파괴자의 검 | 스킬 시전 중 물공/치명타 확률 점차 상승 (최대 100%/35%) | 최대치 도달 시간은 임시 3초 |
+| 세 번째 눈 | 마공 +50%, 5초마다 전방의 가장 가까운 적에게 마법피해·기절 | 임시 기본피해 1, 임시 사거리 12, 비주얼 없음 |
+| 쇠사슬 | 스킬 시작 시 쿨타임에 비례한 추가 마법 타격 | 타격 횟수·피해 공식은 임시값; 사슬 그래픽 없음 |
+| 루비 심장 | 교대 후 3초간 상처 부여, 출혈 피해 3킬마다 HP 1 회복 | 출혈 판정과 동작 미검증 |
+| 왕가의 휘장 | 출혈 적용 이벤트에 최대 8회 추가 물리피해 | 피해 계수는 임시 기본피해 1, 비주얼 없음 |
 
-## 새로 추가된 특수 전투 코드 (게임 미검증)
+코드 연결된 항목 11개 + 효과 원문 미확정 항목 1개. **등록·전투 동작이 실증된 항목은 0개**입니다.
 
-| 아이템 | 작성한 동작 | 소스 |
-| --- | --- | --- |
-| 은빛 모피 | 20초 쿨다운으로 유효한 한 번의 피해 무효화 | `SilverFurShield.cs` |
-| 야생의 표식 | 추가 이동속도 %에 따른 물리/마법 공격력 동적 보너스 | `WildMarkSpeedPower.cs` |
-| 거인의 식칼 | 회복 시 10초 동안 물리공격력 +75% | `HealTriggeredPhysicalBuff.cs` |
-| 살점 핵 | 유효 피해 50% 감소 및 동일 플레이어에 대해 1회 사망 부활 | `FleshCoreGuard.cs` |
-| 만능 플라스크 | 유효 공격 15%로 5가지 상태이상 중 1개 부여 | `UniversalFlaskProc.cs` |
-| 루비 심장 | 교대 후 3초 상처 부여 및 출혈 피해로 3명 처치 시 HP 1 회복 | `RubyHeartWound.cs` |\n| 파괴자의 검 | 스킬 사용 중 물리 공격력/치명타 증가, 스킬 완료/취소 시 해제 (상승 속도 **임시 3초**) | `DestroyerBladeCharge.cs` |
+## 해금 시스템
 
-**7종 모두 구현 코드가 저장소에 있는 상태이지 빌드/게임 정상작동이 입증된 상태가 아닙니다.**
+- 원문 규칙: 각 지정 스컬로 알렉산더 처치 시 해당 아이템 2개 해금
+- 기존 `UnlockStore`: JSON 영속 저장
+- `BossDefeatDiagnosticPatch`: 플레이어의 보스 처치를 감지하면 `bossKey`, 보스 게임 오브젝트 이름, 장착 중인 스컬 내부 이름을 BepInEx 로그에 표시하도록 작성
+- `[UnlockVerification] AlexanderBossKey = 0`: **기본적으로 자동 해금 비활성화**
+- `[UnlockVerification] ExactSkullNames = `: `leader=원문에서 확인한 정확한 무기 내부 이름;hunger=...` 형식의 스컬 그룹 매핑. 정확히 검증된 ID가 입력된 경우에만 해금하도록 설계
+- 임의의 보스나 미검증 스컬로 잘못 해금되지 않도록 추측 식별자를 기본 설정에 넣지 않음
+- 이미 게임 시작 시 생성된 아이템 목록에는 재주입하지 않으므로 해금 후 게임을 다시 시작해야 등장 가능
 
-## 여전히 구현되지 않은 특수 효과
+## 미완료 핵심 작업
 
-- 험악한 가면: 교대 시 주변 적 둔화 6초
-- 세 번째 눈: 5초마다 전방 적 공격·기절
-- 쇠사슬: 스킬 시전 시 쿨타임에 비례한 다중 사슬 공격
-- 왕가의 휘장: 출혈 부여 시 최대 8회 추가 물리피해
-- 완벽한 마석: **원본 스크린샷에 효과 설명이 나오지 않아 사양 미확정**
-- 보스 알렉산더 처치 후 해당 스컬 판정과 해금 이벤트 훅
-- 사용자 제공 이미지의 실제 아이콘 크롭·저작권 허가·프리팹 적용
-- 게임 로딩, 상점, 드롭 풀, 세이브, 다른 모드 충돌 테스트
+1. 실제 Skul 게임 어셈블리를 참조해 **컴파일 오류 해결**
+2. 보스 Alexander의 정확한 `Character.Key` 및 각 스컬 6종의 내부 무기 이름 대조 후 기본 매핑
+3. 게임 내 아이템 프리팹, 인게임 효과, 실제 드롭·상점 노출 검증
+4. 이미지 사용·변형 허가를 받은 전용 아이콘, 애니메이션, 사슬 시각효과 연결
+5. 원문에 빠진 `완벽한 마석` 설명 및 피해·느려짐·사거리·성장 속도 계수 확정
+6. 장착/해제, 클리어, 보스전, 스테이지 이동, 세이브, 기존 모드 충돌 테스트
+7. 모든 항목 검증 후 DLL/Thunderstore 출시
 
-전투 스킬의 애니메이션·상태이상·보스 처치 판정은 실제 게임 어셈블리에서 시그니처와 리소스가 확인되지 않은 상태에서 임의 구현하지 않습니다.
+## 로컬 개발 환경에서 빌드
 
-## 검증 단계
+Windows PowerShell에서:
 
-1. 별도 Skul 프로필과 백업된 세이브 파일 준비
-2. `pwsh -File ./build.ps1 -SkulRoot "C:\Program Files (x86)\Steam\steamapps\common\Skul"` 또는 Windows PowerShell의 `./build.ps1`
-3. 빌드 로그로 공개화 대상/네임스페이스/필드·이벤트 시그니처 오류 수정
-4. 별도 프로필에서 BepInEx로 로드 테스트; `LogOutput.log` 확인
-5. [Testing] `UnlockAllItemsForTesting=true`로 각 아이템 등장/획득/해제/효과 검증
-6. 실제 보스 처치 해금 구현 뒤 다시 옵션 false로 해금 저장·재실행 테스트
-7. 모든 절차 통과 전 GitHub Release 배포 금지
+```powershell
+./build.ps1 -SkulRoot "C:\Program Files (x86)\Steam\steamapps\common\Skul"
+```
 
-## 참고한 커뮤니티 구현
+빌드 실패 시 오류 로그를 수집해 게임 API 차이를 수정해야 합니다. `build.ps1`은 로컬에 있는 게임 DLL을 확인한 뒤 빌드 명령을 실행하는 스크립트이며, **본 대화에서 실행·검증되지 않았습니다.**
+
+테스트용 BepInEx 구성:
+
+- `[Testing] UnlockAllItemsForTesting = true` (기본값 false): 해금 없이 아이템 등록 시도
+- 별도의 모드 프로필 사용, 게임 저장 파일 백업
+- BepInEx `LogOutput.log`에서 `Boss kill diagnostics` 검색
+
+## 참고 구현
 
 - https://github.com/MrBacanudo/SkulHardModeMods/tree/main/CustomItems
 - https://github.com/damku1214/VoiceOfTheCommunity
+- https://github.com/shabbywu/Skul-Decompile (과거 버전 디컴파일 소스, **현재 게임 호환 보장 없음**)
