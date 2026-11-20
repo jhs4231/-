@@ -75,6 +75,8 @@ namespace SkulExclusiveUnlocks
                 prefabKeyword2 = second,
                 stats = new Stat.Values(values),
             };
+            if (key == "FleshCore")
+                item.abilities = new Ability[] { new FleshCoreGuard() };
             if (key == "GiantCleaver")
                 item.abilities = new Ability[] { new HealTriggeredPhysicalBuff { duration = 10f, physicalAttackBonus = 0.75 } };
             if (key == "UniversalFlask")
@@ -212,11 +214,26 @@ namespace SkulExclusiveUnlocks
                 attacher._components = new AbilityAttacher[abilities.Length];
                 for (int i = 0; i < abilities.Length; i++)
                 {
-                    var node = new GameObject("[" + i + "]", typeof(HealTriggeredPhysicalBuffComponent));
-                    node.transform.SetParent(abilityContainer.transform, false);
-                    var component = node.GetComponent<HealTriggeredPhysicalBuffComponent>();
-                    component.Configure((HealTriggeredPhysicalBuff)abilities[i]);
-                    attacher._components[i] = component;
+                    if (abilities[i] is HealTriggeredPhysicalBuff healing)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(HealTriggeredPhysicalBuffComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<HealTriggeredPhysicalBuffComponent>();
+                        component.Configure(healing);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is FleshCoreGuard guard)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(FleshCoreGuardComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<FleshCoreGuardComponent>();
+                        component.Configure(guard);
+                        attacher._components[i] = component;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Missing ability component for " + abilities[i].GetType().FullName);
+                    }
                 }
             }
             // Placeholder visual assets until permission-cleared 32px sprites are available.
