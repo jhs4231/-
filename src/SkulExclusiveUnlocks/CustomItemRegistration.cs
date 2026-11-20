@@ -75,6 +75,10 @@ namespace SkulExclusiveUnlocks
                 prefabKeyword2 = second,
                 stats = new Stat.Values(values),
             };
+            if (key == "SilverFur")
+                item.abilities = new Ability[] { new SilverFurShield { cooldown = 20f } };
+            if (key == "WildMark")
+                item.abilities = new Ability[] { new WildMarkSpeedPower() };
             if (key == "FleshCore")
                 item.abilities = new Ability[] { new FleshCoreGuard() };
             if (key == "GiantCleaver")
@@ -228,6 +232,22 @@ namespace SkulExclusiveUnlocks
                         node.transform.SetParent(abilityContainer.transform, false);
                         var component = node.GetComponent<FleshCoreGuardComponent>();
                         component.Configure(guard);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is SilverFurShield shield)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(SilverFurShieldComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<SilverFurShieldComponent>();
+                        component.Configure(shield);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is WildMarkSpeedPower speed)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(WildMarkSpeedPowerComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<WildMarkSpeedPowerComponent>();
+                        component.Configure(speed);
                         attacher._components[i] = component;
                     }
                     else
