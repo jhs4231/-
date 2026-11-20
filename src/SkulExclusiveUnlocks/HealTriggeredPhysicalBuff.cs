@@ -91,5 +91,8 @@ namespace SkulExclusiveUnlocks
 
     // The name follows the community project's reflection convention:
     // Ability type + 'Component'. AbilityComponent<T> will instantiate the ability.
-    public sealed class HealTriggeredPhysicalBuffComponent : AbilityComponent<HealTriggeredPhysicalBuff> {}
+    public sealed class HealTriggeredPhysicalBuffComponent : AbilityComponent<HealTriggeredPhysicalBuff>
+    {
+        internal void Configure(HealTriggeredPhysicalBuff buff) { _ability = buff; }
+    }
 }
