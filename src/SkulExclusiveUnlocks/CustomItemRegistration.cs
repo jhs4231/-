@@ -75,6 +75,10 @@ namespace SkulExclusiveUnlocks
                 prefabKeyword2 = second,
                 stats = new Stat.Values(values),
             };
+            if (key == "UniversalFlask")
+                item.abilities = new Ability[] { new UniversalFlaskProc { chancePercent = 15 } };
+            if (key == "RubyHeart")
+                item.abilities = new Ability[] { new RubyHeartWound { windowSeconds = 3f } };
             if (key == "SilverFur")
                 item.abilities = new Ability[] { new SilverFurShield { cooldown = 20f } };
             if (key == "WildMark")
@@ -83,12 +87,7 @@ namespace SkulExclusiveUnlocks
                 item.abilities = new Ability[] { new FleshCoreGuard() };
             if (key == "GiantCleaver")
                 item.abilities = new Ability[] { new HealTriggeredPhysicalBuff { duration = 10f, physicalAttackBonus = 0.75 } };
-            if (key == "UniversalFlask")
-            {
-                // 15% total, not 15% per status. Each hit chooses one random status.
-                // Runtime attack hook still needs verification to avoid multi-hit overprocs.
-                item.combatLogicRequiresIntegration = true;
-            }
+            // NOTE: Unity/game assemblies must be supplied to validate runtime event signatures.
             items.Add(item);
             Translations[item.displayNameKey] = title;
             Translations["item/Custom-" + key + "/description"] = description;
@@ -248,6 +247,22 @@ namespace SkulExclusiveUnlocks
                         node.transform.SetParent(abilityContainer.transform, false);
                         var component = node.GetComponent<WildMarkSpeedPowerComponent>();
                         component.Configure(speed);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is UniversalFlaskProc flask)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(UniversalFlaskProcComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<UniversalFlaskProcComponent>();
+                        component.Configure(flask);
+                        attacher._components[i] = component;
+                    }
+                    else if (abilities[i] is RubyHeartWound ruby)
+                    {
+                        var node = new GameObject("[" + i + "]", typeof(RubyHeartWoundComponent));
+                        node.transform.SetParent(abilityContainer.transform, false);
+                        var component = node.GetComponent<RubyHeartWoundComponent>();
+                        component.Configure(ruby);
                         attacher._components[i] = component;
                     }
                     else
