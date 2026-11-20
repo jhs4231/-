@@ -30,7 +30,7 @@ namespace SkulExclusiveUnlocks
         {
             var result = new List<ExclusiveItemReference>();
             Add(result, "SilverFur", "은빛 모피", "피격 시 데미지를 입지 않습니다. (쿨타임: 20초) 이동속도가 40% 증가합니다.",
-                Rarity.Rare, Inscription.Key.Soar, Inscription.Key.Misfortune, "leader",
+                Rarity.Rare, Inscription.Key.Soar, Inscription.Key.HiddenBlade, "leader",
                 new Stat.Value(Stat.Category.PercentPoint, Stat.Kind.MovementSpeed, 0.40));
             Add(result, "WildMark", "야생의 표식", "추가 이동속도 1%당 물리 및 마법공격력이 1% 증가합니다. 이동속도가 90% 증가합니다.",
                 Rarity.Legendary, Inscription.Key.Chase, Inscription.Key.Brawl, "leader",
@@ -50,10 +50,10 @@ namespace SkulExclusiveUnlocks
             Add(result, "DestroyerBlade", "파괴자의 검", "스킬 시전 중 물리공격력과 치명타 확률 지속 증가 (최대 100%, 35%).",
                 Rarity.Unique, Inscription.Key.Execution, Inscription.Key.Arms, "violence");
             Add(result, "ThirdEye", "세 번째 눈", "마법공격력 50% 증가. 5초마다 전방의 적에게 마법피해 및 기절.",
-                Rarity.Rare, Inscription.Key.Dizziness, Inscription.Key.Misfortune, "released",
+                Rarity.Rare, Inscription.Key.Dizziness, Inscription.Key.HiddenBlade, "released",
                 new Stat.Value(Stat.Category.PercentPoint, Stat.Kind.MagicAttackDamage, 0.50));
             Add(result, "Chains", "쇠사슬", "스킬 사용 시 마법피해를 주는 사슬이 나오며 스킬 쿨타임에 따라 증가.",
-                Rarity.Legendary, Inscription.Key.Wisdom, Inscription.Key.Manatech, "released");
+                Rarity.Legendary, Inscription.Key.Wisdom, Inscription.Key.Artifact, "released");
             Add(result, "RubyHeart", "루비 심장", "교대 후 3초간 모든 공격에 상처. 출혈 처치 3명마다 체력 1 회복.",
                 Rarity.Unique, Inscription.Key.ExcessiveBleeding, Inscription.Key.Antique, "swordsman");
             Add(result, "RoyalInsignia", "왕가의 휘장", "출혈 부여 시 추가 물리피해가 최대 8회 발동.",
@@ -200,6 +200,7 @@ namespace SkulExclusiveUnlocks
             cached.keyword2 = prefabKeyword2;
             cached._stat = stats;
             cached._rarity = rarity;
+            cached._groupItemKeys = new string[0];
             if (abilities != null && abilities.Length > 0)
             {
                 // Mirrors the verified item ability attachment flow in VoiceOfTheCommunity.
