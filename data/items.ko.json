@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "source": "https://gall.dcinside.com/mgallery/board/view?id=skul&no=57505",
+  "status": "design specification only; not runtime-registered items",
+  "unlockRule": "defeat Alexander using required skull",
+  "groups": [
+    {
+      "id": "leader",
+      "title": "무리의 우두머리",
+      "requiredSkull": "영원의 웨어울프",
+      "boss": "알렉산더",
+      "items": [
+        {
+          "id": "leader-1",
+          "name": "은빛 모피",
+          "rarity": "rare",
+          "inscriptions": [
+            "비상",
+            "암기"
+          ],
+          "effectDescription": "피격 시 데미지를 입지 않습니다. (쿨타임: 20초) 이동속도가 40% 증가합니다.",
+          "parameters": {
+            "invulnerabilitySeconds": null,
+            "invulnerabilityCooldownSeconds": 20,
+            "movementSpeedPercent": 40
+          },
+          "requiresResearch": false
+        },
+        {
+          "id": "leader-2",
+          "name": "야생의 표식",
+          "rarity": "legendary",
+          "inscriptions": [
+            "추적",
+            "난투"
+          ],
+          "effectDescription": "추가 이동속도 1%당 물리 및 마법공격력이 1% 증가합니다. 이동속도가 90% 증가합니다.",
+          "parameters": {
+            "attackPercentPerBonusMovementSpeedPercent": 1,
+            "movementSpeedPercent": 90
+          },
+          "requiresResearch": false
+        }
+      ]
+    },
+    {
+      "id": "hunger",
+      "title": "끝없는 허기",
+      "requiredSkull": "구우우우울",
+      "boss": "알렉산더",
+      "items": [
+        {
+          "id": "hunger-1",
+          "name": "거인의 식칼",
+          "rarity": "rare",
+          "inscriptions": [
+            "복수",
+            "무구"
+          ],
+          "effectDescription": "체력을 회복할 시 10초간 물리공격력이 75% 증가합니다.",
+          "parameters": {
+            "physicalAttackPercent": 75,
+            "durationSeconds": 10
+          },
+          "requiresResearch": false
+        },
+        {
+          "id": "hunger-2",
+          "name": "살점 핵",
+          "rarity": "legendary",
+          "inscriptions": [
+            "복수",
+            "성물"
+          ],
+          "effectDescription": "최대 체력이 100 증가합니다. 받는 데미지가 50% 감소합니다. 사망 시 100%의 체력으로 부활합니다. (최대 1회)",
+          "parameters": {
+            "maxHealthFlat": 100,
+            "incomingDamageReductionPercent": 50,
+            "revivesPerRun": 1,
+            "reviveHealthPercent": 100
+          },
+          "requiresResearch": false
+        }
+      ]
+    },
+    {
+      "id": "science",
+      "title": "과학의 이름으로",
+      "requiredSkull": "검은 연금술사",
+      "boss": "알렉산더",
+      "items": [
+        {
+          "id": "science-1",
+          "name": "만능 플라스크",
+          "rarity": "rare",
+          "inscriptions": [
+            "용기",
+            "지혜"
+          ],
+          "effectDescription": "모든 공격이 15% 확률로 무작위 상태이상을 부여합니다.",
+          "parameters": {
+            "statusChancePercent": 15
+          },
+          "requiresResearch": false
+        },
+        {
+          "id": "science-2",
+          "name": "완벽한 마석",
+          "rarity": "legendary",
+          "inscriptions": [
+            "골동품"
+          ],
+          "effectDescription": null,
+          "parameters": null,
+          "requiresResearch": true
+        }
+      ]
+    },
+    {
+      "id": "violence",
+      "title": "폭력이 답이다",
+      "requiredSkull": "디스트로이어",
+      "boss": "알렉산더",
+      "items": [
+        {
+          "id": "violence-1",
+          "name": "험악한 가면",
+          "rarity": "rare",
+          "inscriptions": [
+            "처형",
+            "용기"
+          ],
+          "effectDescription": "교대 쿨다운 속도가 20% 증가합니다. 교대 시 적들이 6초간 느려집니다.",
+          "parameters": {
+            "swapCooldownSpeedPercent": 20,
+            "slowDurationSeconds": 6
+          },
+          "requiresResearch": false
+        },
+        {
+          "id": "violence-2",
+          "name": "파괴자의 검",
+          "rarity": "unique",
+          "inscriptions": [
+            "처형",
+            "무구"
+          ],
+          "effectDescription": "스킬이 시전되는 동안 물리공격력과 치명타 확률이 계속 증가합니다. (최대 100%, 35%)",
+          "parameters": {
+            "maxPhysicalAttackPercent": 100,
+            "maxCriticalChancePercent": 35,
+            "rampRate": "not specified"
+          },
+          "requiresResearch": true
+        }
+      ]
+    },
+    {
+      "id": "released",
+      "title": "풀려난 힘",
+      "requiredSkull": "아크리치",
+      "boss": "알렉산더",
+      "items": [
+        {
+          "id": "released-1",
+          "name": "세 번째 눈",
+          "rarity": "rare",
+          "inscriptions": [
+            "현기증",
+            "암기"
+          ],
+          "effectDescription": "마법공격력이 50% 증가합니다. 5초마다 세 번째 눈이 깜빡여 전방의 적에게 마법데미지를 입히고 기절을 부여합니다.",
+          "parameters": {
+            "magicAttackPercent": 50,
+            "triggerIntervalSeconds": 5,
+            "damageAmount": "not specified",
+            "stunDuration": "not specified"
+          },
+          "requiresResearch": true
+        },
+        {
+          "id": "released-2",
+          "name": "쇠사슬",
+          "rarity": "legendary",
+          "inscriptions": [
+            "지혜",
+            "마도구"
+          ],
+          "effectDescription": "스킬 사용 시 다수의 사슬이 뻗어나와 마법데미지를 입힙니다. 스킬의 쿨타임에 비례하여 사슬의 개수와 데미지가 증가합니다.",
+          "parameters": {
+            "chainsPerCooldown": "not specified",
+            "damageFormula": "not specified"
+          },
+          "requiresResearch": true
+        }
+      ]
+    },
+    {
+      "id": "swordsman",
+      "title": "최강의 검사",
+      "requiredSkull": "친위대장",
+      "boss": "알렉산더",
+      "items": [
+        {
+          "id": "swordsman-1",
+          "name": "루비 심장",
+          "rarity": "unique",
+          "inscriptions": [
+            "과다출혈",
+            "골동품"
+          ],
+          "effectDescription": "교대 시 3초간 모든 공격이 상처를 부여합니다. 출혈 데미지로 처치한 적 3명당 체력을 1 회복합니다.",
+          "parameters": {
+            "woundOnSwapSeconds": 3,
+            "bleedKillsPerHeal": 3,
+            "heal": 1
+          },
+          "requiresResearch": false
+        },
+        {
+          "id": "swordsman-2",
+          "name": "왕가의 휘장",
+          "rarity": "legendary",
+          "inscriptions": [
+            "과다출혈",
+            "가보"
+          ],
+          "effectDescription": "출혈 부여 시 대량 출혈이 발생하여 추가 물리 데미지를 최대 8번까지 입힙니다.",
+          "parameters": {
+            "maxExtraHits": 8,
+            "damageFormula": "not specified"
+          },
+          "requiresResearch": true
+        }
+      ]
+    }
+  ]
+}
