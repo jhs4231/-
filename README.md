@@ -11,13 +11,13 @@
 - 12개 아이템의 이름, 등급, 각인, 설명, 알려진 수치와 6개 해금 조건
 - BepInEx 5/Harmony 기반 C# 플러그인, 실험적인 아이템 데이터베이스 등록 및 해금 플래그 JSON 저장 코드
 - 게임 버전과 실제 API를 파악한 뒤 연동해야 할 TODO
-- `HealTriggeredPhysicalBuff.cs`와 `FleshCoreGuard.cs`의 실험적 전투 이벤트 구현 2종
+- 실험적인 전투 능력 소스 7종 (`docs/GAMEPLAY_STATUS.md` 참조)
 
 ## 아직 미구현
 
 - 알렉산더 사망 이벤트 감지, 처치 당시 스컬 판정, 해금 자동 발동
 - 아이템 등록/드롭의 컴파일 및 실제 게임 검증, 상점 풀 편입, 정식 아이콘 표시
-- 전투 효과 12개 및 각인 발동
+- 일부 전투 효과, 실제 전투 동작 검증 및 아이콘/각인 통합 테스트
 - 게임 실행 테스트 및 배포 DLL/Thunderstore 패키징
 
 **중요:** 스크린샷의 `완벽한 마석` 효과 설명은 보이지 않습니다. `파괴자의 검`의 증가 속도, `세 번째 눈`의 데미지/기절 지속시간 등 몇몇 구현 수치도 원문에 없습니다. 추측값을 사실처럼 사용하지 않았습니다.
@@ -31,10 +31,10 @@
 
 ## 빌드(개발자용)
 
-1. Windows에서 .NET Framework 4.7.2 타기팅 팩, C# 빌드 도구와 BepInEx 5 설치
-2. `BEPINEX_CORE` 환경 변수를 해당 게임 설치의 `BepInEx/core` 폴더로 지정
-3. `msbuild src/SkulExclusiveUnlocks/SkulExclusiveUnlocks.csproj /p:Configuration=Release`
-4. **현재 빌드는 골격만 로드합니다.** DLL이 있어도 게임 내 새 아이템이나 해금은 구현되지 않았습니다.
+1. Windows에서 .NET Framework 4.6.2 타기팅 팩, C# 빌드 도구와 BepInEx 5 설치
+2. `SkulRoot`가 올바른 Skul 게임 설치 폴더인지 확인
+3. PowerShell에서 `./build.ps1 -SkulRoot "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Skul"` 실행
+4. **컴파일 및 실제 게임 동작은 아직 확인하지 못했습니다.**
 
 BepInEx 모딩 선례: https://github.com/Tobi-Mob/Skul.Mod (해당 프로젝트는 이전 버전 기준이며 최신 호환을 보장하지 않음).
 
